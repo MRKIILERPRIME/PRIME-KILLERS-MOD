@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRIME X KILLERS | Key System</title>
+    <title>PRIME X KILLERS | Firebase Key System</title>
     <style>
         :root {
             --primary-purple: #8a2be2;
@@ -22,9 +22,9 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow: hidden;
         }
 
-        /* Background Glow */
         .bg-glow {
             position: fixed;
             width: 300px;
@@ -48,14 +48,13 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
 
-        /* Circle Logo Container */
         .logo-circle {
             width: 110px;
             height: 110px;
             border: 2px solid var(--primary-purple);
             border-radius: 50%;
             margin: 0 auto 1.5rem;
-            overflow: hidden; /* Keeps image inside the circle */
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -86,7 +85,7 @@
             font-family: 'Courier New', monospace;
             font-size: 1.1rem;
             color: #ddd;
-            letter-spacing: 1px;
+            min-height: 24px;
         }
 
         .main-btn {
@@ -106,9 +105,9 @@
             color: white;
         }
 
-        .btn-generate:hover {
-            background: #a04ef6;
-            transform: scale(1.02);
+        .btn-generate:disabled {
+            background: #444;
+            cursor: not-allowed;
         }
 
         .btn-copy {
@@ -117,11 +116,6 @@
             border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .btn-copy:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        /* Social Buttons */
         .social-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -139,12 +133,13 @@
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.1);
             transition: 0.3s;
+            display: block;
         }
 
         .social-btn:hover {
             border-color: var(--primary-purple);
-            color: white;
             background: rgba(138, 43, 226, 0.2);
+            color: white;
         }
     </style>
 </head>
@@ -152,7 +147,7 @@
 
     <div class="bg-glow"></div>
 
-<div class="container">
+    <div class="container">
         <div class="logo-circle">
             <img src="https://i.supaimg.com/9262daee-f08a-42f1-9b95-9972e6c35b8a.jpg" alt="Logo">
         </div>
@@ -161,50 +156,64 @@
 
         <div class="key-display" id="keyBox">••••••••••••</div>
 
-        <button class="main-btn btn-generate" onclick="showKey()">GET KEY</button>
+        <button class="main-btn btn-generate" id="getBtn" onclick="fetchAndShowKey()">GET KEY</button>
         <button class="main-btn btn-copy" onclick="copyKey()">COPY KEY</button>
 
         <div class="social-grid">
-            <a href="https://youtube.com/@vs18ff?si=dREiHJHOEkfgm2rC" target="_blank" class="social-btn">YOUTUBE</a>
-            <a href="https://t.me/+QMP_xyn_P3lmZGE1" target="_blank" class="social-btn">TELEGRAM</a>
-            <a href="https://www.instagram.com/virajsingh1335?igsh=cXlmZzFmNWI0YTJy" target="_blank" class="social-btn">INSTAGRAM</a>
+            <a href="https://youtube.com/PASTE_YOUR_LINK_HERE" target="_blank" class="social-btn">YOUTUBE</a>
+            <a href="https://t.me/PASTE_YOUR_LINK_HERE" target="_blank" class="social-btn">TELEGRAM</a>
+            <a href="https://instagram.com/PASTE_YOUR_LINK_HERE" target="_blank" class="social-btn">INSTA</a>
         </div>
-
-        <div style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;">
-    
-    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.3); letter-spacing: 1px; margin-bottom: 8px;">
-        OWNER
-        <a href="http://t.me/vs18FF_MODS" target="_blank" style="color: var(--primary-purple); font-weight: bold; text-decoration: none;">
-            @vs18FF_MODS
-        </a>
-    </div>
-             
-    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.3); letter-spacing: 1px;">
-        OWNER
-        <a href="http://t.me/H4CKSELL" target="_blank" style="color: #00d2ff; font-weight: bold; text-decoration: none;">
-            @H4CKSELL
-        </a>
     </div>
 
-</div>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
     <script>
-        // CHANGE YOUR KEY HERE
-        const MY_SECRET_KEY = "vs18ff-2-toplx";"pivcycg";
+        // FIREBASE CONFIG (Firebase console se copy karein)
+        const firebaseConfig = {
+  apiKey: "AIzaSyA8vMZWqHyx5sZugD3-2-CHDS0k3VCDqeo",
+  authDomain: "ffgamansh.firebaseapp.com",
+  databaseURL: "https://ffgamansh-default-rtdb.firebaseio.com",
+  projectId: "ffgamansh",
+  storageBucket: "ffgamansh.firebasestorage.app",
+  messagingSenderId: "451541186937",
+  appId: "1:451541186937:web:1c036f4c8a85d04f51d7a8",
+  measurementId: "G-82F4C1W3KR"
+};
 
-        function showKey() {
-            document.getElementById('keyBox').innerText = MY_SECRET_KEY;
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        async function fetchAndShowKey() {
+            const keyBox = document.getElementById('keyBox');
+            const getBtn = document.getElementById('getBtn');
+            
+            keyBox.innerText = "LOADING...";
+            getBtn.disabled = true;
+
+            try {
+                const doc = await db.collection("keys").doc("current").get();
+                if (doc.exists) {
+                    keyBox.innerText = doc.data().keyValue;
+                } else {
+                    keyBox.innerText = "NO KEY FOUND";
+                }
+            } catch (error) {
+                keyBox.innerText = "ERROR!";
+            } finally {
+                getBtn.disabled = false;
+            }
         }
 
         function copyKey() {
             const keyText = document.getElementById('keyBox').innerText;
-            if(keyText.includes("•")) {
+            if(keyText.includes("•") || keyText === "LOADING..." || keyText === "ERROR!") {
                 alert("Please click GET KEY first!");
                 return;
             }
-            
             navigator.clipboard.writeText(keyText).then(() => {
-                alert("Key copied successfully!");
+                alert("Key copied to clipboard!");
             });
         }
     </script>
